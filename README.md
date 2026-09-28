@@ -1,13 +1,13 @@
 # Deepfake Detection Using GAN with Confidence Scoring
 
-**Group 31 | Academy of Technology | Final Year Project**
+BinaryFox | Academy of Technology | 
 
 ## Members
-- Jitu Ghosh (16900123071)
-- Anish Samel (16900123177)
-- Subhendu Mallick (16900123170)
-- Sudipta Dolay (16900123021)
-- Bimal Kr. Mahato (16900123032)
+- Jitu Ghosh
+- Anish Samel
+- Subhendu Mallick 
+- Sudipta Dolay
+- Bimal Kr. Mahato
 
 ## Notebooks
 | Notebook | Owner | Description |
