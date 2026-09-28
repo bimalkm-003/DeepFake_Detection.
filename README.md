@@ -3,14 +3,11 @@
 **Group 31 | Academy of Technology | Final Year Project**
 
 ## Members
-- Rounak Ghosal (16900123071)
-- Dyutimay Ghosh (16900123177)
-- Bidisha Maji (16900123170)
-- Archisman Sinha (16900123021)
+- Jitu Ghosh (16900123071)
+- Anish Samel (16900123177)
+- Subhendu Mallick (16900123170)
+- Sudipta Dolay (16900123021)
 - Bimal Kr. Mahato (16900123032)
-
-## Guide
-Prof. Abhishek Majumdar, Associate Professor, CSE
 
 ## Notebooks
 | Notebook | Owner | Description |
