@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Upload{% endblock %}
+
+{% block content %}
+
+<section class="section">
+    <div class="container card">
+
+        <h1>Upload Media</h1>
+
+        {% if message %}
+        <div class="alert">
+            {{ message }}
+        </div>
+        {% endif %}
+
+
+        <!-- UPLOAD FORM -->
+        <form method="post" enctype="multipart/form-data">
+
+            <div style="display:flex;flex-direction:column;gap:14px;">
+
+                <input type="file" name="media" accept="image/*,audio/*,video/*" style="
+                        padding:12px;
+                        border-radius:10px;
+                        border:1px solid rgba(255,255,255,0.12);
+                        background:#0f1218;
+                        color:#e8edf5;
+                    " />
+
+                <button type="submit" class="btn btn-primary">
+                    Upload
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <!-- IMAGE PREVIEW -->
+        {% if media_url and media_type == 'image' %}
+
+        <div style="margin-top:20px;">
+
+            {% if uploaded_filename %}
+            <p style="margin-bottom:10px;">
+                Uploaded file:
+                <strong>{{ uploaded_filename }}</strong>
+            </p>
+            {% endif %}
+
+            <h2>Preview</h2>
+
+            <img src="{{ media_url }}" alt="Uploaded image" style="
+                    max-width:100%;
+                    border-radius:14px;
+                " />
+
+
+            <!-- ACTION BUTTONS -->
+            <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    margin-top:20px;
+                ">
+
+                <!-- DELETE -->
+                <form method="post" action="{{ url_for('delete_file') }}" style="margin:0;">
+
+                    <input type="hidden" name="filename" value="{{ uploaded_filename }}">
+
+                    <button type="submit" class="btn" style="
+                            background:#e63946;
+                            color:white;
+                            border:none;
+                        ">
+                        Delete
+                    </button>
+
+                </form>
+
+
+                <!-- DETECT -->
+                <form method="post" action="{{ url_for('detect') }}" style="margin:0;">
+
+                    <input type="hidden" name="filename" value="{{ uploaded_filename }}">
+
+                    <button type="submit" class="btn btn-primary">
+                        Detect
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- AUDIO PREVIEW -->
+        {% elif media_url and media_type == 'audio' %}
+
+        <div style="margin-top:20px;">
+
+            {% if uploaded_filename %}
+            <p style="margin-bottom:10px;">
+                Uploaded file:
+                <strong>{{ uploaded_filename }}</strong>
+            </p>
+            {% endif %}
+
+            <h2>Preview</h2>
+
+            <audio controls style="width:100%;">
+                <source src="{{ media_url }}" />
+                Your browser does not support audio playback.
+            </audio>
+
+
+            <!-- ACTION BUTTONS -->
+            <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    margin-top:20px;
+                ">
+
+                <!-- DELETE -->
+                <form method="post" action="{{ url_for('delete_file') }}" style="margin:0;">
+
+                    <input type="hidden" name="filename" value="{{ uploaded_filename }}">
+
+                    <button type="submit" class="btn" style="
+                            background:#e63946;
+                            color:white;
+                            border:none;
+                        ">
+                        Delete
+                    </button>
+
+                </form>
+
+
+                <!-- DETECT -->
+                <form method="post" action="{{ url_for('detect') }}" style="margin:0;">
+
+                    <input type="hidden" name="filename" value="{{ uploaded_filename }}">
+
+                    <button type="submit" class="btn btn-primary">
+                        Detect
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- VIDEO PREVIEW -->
+        {% elif media_url and media_type == 'video' %}
+
+        <div style="margin-top:20px;">
+
+            {% if uploaded_filename %}
+            <p style="margin-bottom:10px;">
+                Uploaded file:
+                <strong>{{ uploaded_filename }}</strong>
+            </p>
+            {% endif %}
+
+            <h2>Preview</h2>
+
+            <video controls style="
+                    width:100%;
+                    max-height:480px;
+                    border-radius:14px;
+                ">
+                <source src="{{ media_url }}" />
+                Your browser does not support video playback.
+            </video>
+
+
+            <!-- ACTION BUTTONS -->
+            <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    margin-top:20px;
+                ">
+
+                <!-- DELETE -->
+                <form method="post" action="{{ url_for('delete_file') }}" style="margin:0;">
+
+                    <input type="hidden" name="filename" value="{{ uploaded_filename }}">
+
+                    <button type="submit" class="btn" style="
+                            background:#e63946;
+                            color:white;
+                            border:none;
+                        ">
+                        Delete
+                    </button>
+
+                </form>
+
+
+                <!-- DETECT -->
+                <form method="post" action="{{ url_for('detect') }}" style="margin:0;">
+
+                    <input type="hidden" name="filename" value="{{ uploaded_filename }}">
+
+                    <button type="submit" class="btn btn-primary">
+                        Detect
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

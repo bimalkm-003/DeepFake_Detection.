@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}DeepScan — Deepfake Detection{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    {% block extra_css %}{% endblock %}
+
+    <style>
+        /* ── CSS Variables ── */
+        :root {
+            --bg-primary: #0a0c10;
+            --bg-secondary: #0f1218;
+            --bg-card: #13171f;
+            --border: rgba(0, 255, 180, 0.12);
+            --border-hover: rgba(0, 255, 180, 0.35);
+
+            --accent: #00ffb4;
+            --accent-dim: rgba(0, 255, 180, 0.08);
+            --accent-glow: 0 0 18px rgba(0, 255, 180, 0.35);
+
+            --danger: #ff4d6d;
+            --warning: #ffd166;
+
+            --text-primary: #e8edf5;
+            --text-secondary: #7a8899;
+            --text-muted: #44505f;
+
+            --nav-height: 64px;
+            --font-mono: 'Share Tech Mono', monospace;
+            --font-body: 'Outfit', sans-serif;
+
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 10px;
+        }
+
+        /* ── Reset & Base ── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        /* ── Scanline overlay (subtle) ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.04) 2px,
+                    rgba(0, 0, 0, 0.04) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: var(--nav-height);
+            background: rgba(10, 12, 16, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        /* Brand */
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .nav-brand .brand-icon {
+            width: 34px;
+            height: 34px;
+            border: 1.5px solid var(--accent);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            box-shadow: var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-brand .brand-icon::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--accent-dim);
+        }
+
+        .nav-brand .brand-icon i {
+            font-size: 15px;
+            color: var(--accent);
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-brand .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .nav-brand .brand-name {
+            font-family: var(--font-mono);
+            font-size: 17px;
+            color: var(--accent);
+            letter-spacing: 0.04em;
+        }
+
+        .nav-brand .brand-sub {
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Nav links */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 14px;
+            border-radius: var(--radius);
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: color var(--transition), background var(--transition);
+            white-space: nowrap;
+        }
+
+        .nav-link i {
+            font-size: 12px;
+            opacity: 0.7;
+            transition: opacity var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-primary);
+            background: var(--accent-dim);
+        }
+
+        .nav-link:hover i,
+        .nav-link.active i {
+            opacity: 1;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 2px;
+            border-radius: 2px;
+            background: var(--accent);
+            box-shadow: var(--accent-glow);
+        }
+
+        .nav-link.logout-link {
+            color: var(--danger);
+        }
+
+        .nav-link.logout-link:hover {
+            background: rgba(255, 77, 109, 0.1);
+        }
+
+        .desktop-logout {
+            flex-shrink: 0;
+        }
+
+        /* Status badge */
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--accent-dim);
+            font-size: 11.5px;
+            font-family: var(--font-mono);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .nav-status .pulse {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.75);
+            }
+        }
+
+        /* Mobile hamburger */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 36px;
+            height: 36px;
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            transition: border-color var(--transition), background var(--transition);
+        }
+
+        .nav-toggle:hover {
+            border-color: var(--border-hover);
+            background: var(--accent-dim);
+        }
+
+        .nav-toggle span {
+            display: block;
+            height: 1.5px;
+            background: var(--text-secondary);
+            border-radius: 2px;
+            transition: transform var(--transition), opacity var(--transition), background var(--transition);
+        }
+
+        .nav-toggle.open span:nth-child(1) {
+            transform: translateY(6.5px) rotate(45deg);
+            background: var(--accent);
+        }
+
+        .nav-toggle.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .nav-toggle.open span:nth-child(3) {
+            transform: translateY(-6.5px) rotate(-45deg);
+            background: var(--accent);
+        }
+
+        /* Mobile drawer */
+        .nav-drawer {
+            display: none;
+            position: fixed;
+            top: var(--nav-height);
+            left: 0;
+            right: 0;
+            background: rgba(10, 12, 16, 0.97);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px 20px;
+            flex-direction: column;
+            gap: 4px;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 999;
+            transform: translateY(-8px);
+            opacity: 0;
+            transition: transform var(--transition), opacity var(--transition);
+        }
+
+        .nav-drawer.open {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .nav-drawer .nav-link {
+            width: 100%;
+            padding: 10px 14px;
+        }
+
+        .nav-drawer .nav-status {
+            margin-top: 8px;
+            align-self: flex-start;
+        }
+
+        /* ── Main content ── */
+        main {
+            flex: 1;
+            width: 100%;
+        }
+
+        /* ── Footer ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .footer-left .accent {
+            color: var(--accent);
+        }
+
+        .footer-right {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Flash messages ── */
+        .flash-container {
+            position: fixed;
+            top: calc(var(--nav-height) + 12px);
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 340px;
+            width: calc(100vw - 40px);
+        }
+
+        .flash {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 13px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            font-size: 13.5px;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .flash i {
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+        .flash.success {
+            border-color: rgba(0, 255, 180, 0.3);
+        }
+
+        .flash.success i {
+            color: var(--accent);
+        }
+
+        .flash.error {
+            border-color: rgba(255, 77, 109, 0.3);
+        }
+
+        .flash.error i {
+            color: var(--danger);
+        }
+
+        .flash.warning {
+            border-color: rgba(255, 209, 102, 0.3);
+        }
+
+        .flash.warning i {
+            color: var(--warning);
+        }
+
+        .flash-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0 0 0 6px;
+            flex-shrink: 0;
+            transition: color var(--transition);
+        }
+
+        .flash-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* ── Utility classes ── */
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section {
+            padding: 56px 0;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: var(--radius);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0a0c10;
+            border-color: var(--accent);
+        }
+
+        .btn-primary:hover {
+            box-shadow: var(--accent-glow);
+            filter: brightness(1.08);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border-color: var(--border-hover);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+
+            .nav-links,
+            .nav-status,
+            .desktop-logout {
+                display: none;
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-drawer {
+                display: flex;
+            }
+
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══ NAVBAR ══ -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+
+            <!-- Brand -->
+            <a href="{{ url_for('home') }}" class="nav-brand" aria-label="DeepScan Home">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-eye"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">DeepScan</span>
+                    <span class="brand-sub">Deepfake Detection</span>
+                </div>
+            </a>
+
+            <!-- Desktop links -->
+            <ul class="nav-links" role="list">
+                <li>
+                    <a href="{{ url_for('home') }}"
+                        class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+                        <i class="fa-solid fa-house"></i> Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('about') }}"
+                        class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
+                        <i class="fa-solid fa-circle-info"></i> About
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Status badge -->
+            <div class="nav-status" aria-label="Model status: online">
+                <span class="pulse" aria-hidden="true"></span>
+                Model Online
+            </div>
+
+            {% if session.get('user') %}
+            <a href="{{ url_for('logout') }}" class="nav-link logout-link desktop-logout" aria-label="Logout">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+            {% endif %}
+
+            <!-- Mobile toggle -->
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- ══ MOBILE DRAWER ══ -->
+    <div class="nav-drawer" id="navDrawer" role="dialog" aria-label="Mobile navigation">
+        <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+            <i class="fa-solid fa-house"></i> Home
+        </a>
+        <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
+            <i class="fa-solid fa-circle-info"></i> About
+        </a>
+        {% if session.get('user') %}
+        <a href="{{ url_for('logout') }}" class="nav-link logout-link">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+        {% endif %}
+        <div class="nav-status">
+            <span class="pulse"></span> Model Online
+        </div>
+    </div>
+
+    <!-- ══ FLASH MESSAGES ══ -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container" role="alert" aria-live="polite">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">
+            {% if category == 'success' %}
+            <i class="fa-solid fa-circle-check"></i>
+            {% elif category == 'error' %}
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            {% else %}
+            <i class="fa-solid fa-circle-info"></i>
+            {% endif %}
+            <span>{{ message }}</span>
+            <button class="flash-close" onclick="this.parentElement.remove()" aria-label="Dismiss">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- ══ PAGE CONTENT ══ -->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ══ FOOTER ══ -->
+    <footer role="contentinfo">
+        <div class="footer-left">
+            <i class="fa-solid fa-eye" style="color: var(--accent);"></i>
+            <span><span class="accent">DeepScan</span> &mdash; Final Year Project &copy; {{ 2025 }}</span>
+        </div>
+        <div class="footer-right">
+            Built with AI &amp; Computer Vision
+        </div>
+    </footer>
+
+    <!-- ══ JAVASCRIPT ══ -->
+    <script>
+        // ── Mobile nav toggle ──
+        const toggle = document.getElementById('navToggle');
+        const drawer = document.getElementById('navDrawer');
+
+        toggle.addEventListener('click', () => {
+            const isOpen = drawer.classList.toggle('open');
+            toggle.classList.toggle('open', isOpen);
+            toggle.setAttribute('aria-expanded', isOpen);
+        });
+
+        // Close drawer when a link is clicked
+        drawer.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                drawer.classList.remove('open');
+                toggle.classList.remove('open');
+                toggle.setAttribute('aria-expanded', false);
+            });
+        });
+
+        // Close drawer on outside click
+        document.addEventListener('click', e => {
+            if (!toggle.contains(e.target) && !drawer.contains(e.target)) {
+                drawer.classList.remove('open');
+                toggle.classList.remove('open');
+                toggle.setAttribute('aria-expanded', false);
+            }
+        });
+
+        // ── Auto-dismiss flash messages ──
+        document.querySelectorAll('.flash').forEach(flash => {
+            setTimeout(() => {
+                flash.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                flash.style.opacity = '0';
+                flash.style.transform = 'translateX(20px)';
+                setTimeout(() => flash.remove(), 400);
+            }, 4500);
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+
+</body>
+
+</html>

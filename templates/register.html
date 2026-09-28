@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container card" style="max-width: 480px; margin: 0 auto;">
+        <h1>Register</h1>
+        <form method="post">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+                <input type="text" name="username" placeholder="Username" required
+                    style="padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:#0f1218;color:#e8edf5;" />
+                <input type="email" name="email" placeholder="Email" required
+                    style="padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:#0f1218;color:#e8edf5;" />
+                <input type="password" name="password" placeholder="Create a password" required
+                    style="padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:#0f1218;color:#e8edf5;" />
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </div>
+        </form>
+        <p style="margin-top:18px;color:var(--text-secondary);">Already registered? <a href="{{ url_for('login') }}"
+                style="color:var(--accent);">Login here</a>.</p>
+    </div>
+</section>
+{% endblock %}

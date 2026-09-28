@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Detect{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="card" style="margin-bottom: 24px;">
+            <h1>Detect</h1>
+            <p style="color: var(--text-secondary); margin-top: 6px;">
+                Upload an image, audio, or video file to scan it for deepfake manipulation.
+            </p>
+        </div>
+
+        <!-- Flash / status message from the upload route -->
+        {% if message %}
+        <div class="alert" style="margin-bottom: 24px;">{{ message }}</div>
+        {% endif %}
+
+        <!-- Upload Card -->
+        <div class="card">
+            <form method="post" enctype="multipart/form-data" action="{{ url_for('upload') }}" id="detect-form">
+
+                <!-- Drag-and-drop zone -->
+                <label for="media-input" id="drop-zone">
+                    <div class="drop-icon">
+                        <!-- Upload SVG icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                        </svg>
+                    </div>
+                    <p class="drop-title">Drag &amp; drop your file here</p>
+                    <p class="drop-sub">or click to browse &mdash; images, audio &amp; video supported</p>
+                    <span class="drop-badge" id="file-name-badge">No file chosen</span>
+                    <input type="file" id="media-input" name="media" accept="image/*,audio/*,video/*" required
+                        style="display:none;" />
+                </label>
+
+                <!-- Supported formats hint -->
+                <p class="formats-hint">
+                    Supported: JPG, PNG, WEBP, GIF, BMP &bull; MP4, MOV, AVI, MKV &bull; MP3, WAV, AAC, OGG, FLAC
+                </p>
+
+                <!-- Analyse button -->
+                <button type="submit" class="btn btn-primary analyse-btn" id="analyse-btn" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="margin-right:8px;vertical-align:middle;">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Analyse for Deepfake
+                </button>
+
+            </form>
+        </div>
+
+        <!-- Preview section (shown only after a successful upload redirect) -->
+        {% if media_url and media_type == 'image' %}
+        <div class="card preview-card">
+            <h2 class="preview-title">Preview</h2>
+            <img src="{{ media_url }}" alt="Uploaded image"
+                style="max-width:100%; border-radius:12px; margin-top:12px;" />
+        </div>
+        {% elif media_url and media_type == 'audio' %}
+        <div class="card preview-card">
+            <h2 class="preview-title">Preview</h2>
+            <audio controls style="width:100%; margin-top:12px;">
+                <source src="{{ media_url }}" />
+                Your browser does not support audio playback.
+            </audio>
+        </div>
+        {% elif media_url and media_type == 'video' %}
+        <div class="card preview-card">
+            <h2 class="preview-title">Preview</h2>
+            <video controls style="width:100%; max-height:480px; border-radius:12px; margin-top:12px;">
+                <source src="{{ media_url }}" />
+                Your browser does not support video playback.
+            </video>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<!-- ── Scoped styles ─────────────────────────────────────────────────── -->
+<style>
+    /* Drop zone */
+    #drop-zone {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 48px 24px;
+        border: 2px dashed rgba(0, 230, 160, 0.35);
+        border-radius: 14px;
+        cursor: pointer;
+        text-align: center;
+        transition: border-color 0.2s, background 0.2s;
+        background: rgba(0, 230, 160, 0.03);
+    }
+
+    #drop-zone:hover,
+    #drop-zone.drag-over {
+        border-color: rgba(0, 230, 160, 0.75);
+        background: rgba(0, 230, 160, 0.07);
+    }
+
+    .drop-icon {
+        color: #00e6a0;
+        margin-bottom: 4px;
+    }
+
+    .drop-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--text-primary, #e8edf5);
+        margin: 0;
+    }
+
+    .drop-sub {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #8892a4);
+        margin: 0;
+    }
+
+    /* Pill badge showing chosen filename */
+    .drop-badge {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 4px 14px;
+        border-radius: 999px;
+        background: rgba(0, 230, 160, 0.12);
+        color: #00e6a0;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        max-width: 320px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Formats hint */
+    .formats-hint {
+        font-size: 0.76rem;
+        color: var(--text-secondary, #8892a4);
+        text-align: center;
+        margin: 14px 0 20px;
+        opacity: 0.7;
+    }
+
+    /* Analyse button — full-width on detect page */
+    .analyse-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .analyse-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    .analyse-btn:not(:disabled):hover {
+        transform: translateY(-1px);
+    }
+
+    /* Preview card spacing */
+    .preview-card {
+        margin-top: 24px;
+    }
+
+    .preview-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-secondary, #8892a4);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+</style>
+
+<!-- ── Interaction script ─────────────────────────────────────────────── -->
+<script>
+    const input = document.getElementById('media-input');
+    const badge = document.getElementById('file-name-badge');
+    const btn = document.getElementById('analyse-btn');
+    const dropZone = document.getElementById('drop-zone');
+
+    // Update badge + enable button when a file is picked
+    input.addEventListener('change', () => {
+        if (input.files.length > 0) {
+            badge.textContent = input.files[0].name;
+            btn.disabled = false;
+        } else {
+            badge.textContent = 'No file chosen';
+            btn.disabled = true;
+        }
+    });
+
+    // Drag-and-drop visual feedback
+    ['dragenter', 'dragover'].forEach(evt =>
+        dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('drag-over'); })
+    );
+    ['dragleave', 'drop'].forEach(evt =>
+        dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove('drag-over'); })
+    );
+    dropZone.addEventListener('drop', e => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            input.files = files;          // assign dropped files to the input
+            badge.textContent = files[0].name;
+            btn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container card">
+        <h1>Edit Profile</h1>
+        {% if message %}
+        <p style="color:var(--accent);">{{ message }}</p>
+        {% endif %}
+        <form method="post" style="display:flex;flex-direction:column;gap:14px;">
+            <input type="text" name="display_name" value="{{ display_name }}" placeholder="Display name"
+                style="padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:#0f1218;color:#e8edf5;" />
+            <textarea name="bio" placeholder="Short bio" rows="4"
+                style="padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:#0f1218;color:#e8edf5;resize:vertical;">{{ bio }}</textarea>
+            <input type="email" name="email" value="{{ email }}" placeholder="Email address"
+                style="padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:#0f1218;color:#e8edf5;" />
+            <button type="submit" class="btn btn-primary">Save profile</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

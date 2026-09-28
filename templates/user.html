@@ -1,0 +1,677 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero Section ──────────────────────────────────────────────────── -->
+<section class="ds-hero">
+    <!-- Animated scan-line background grid -->
+    <div class="ds-grid" aria-hidden="true"></div>
+    <!-- Glowing orb -->
+    <div class="ds-orb" aria-hidden="true"></div>
+
+    <div class="container ds-hero-inner">
+        <div class="ds-greeting">
+            <span class="ds-tag">
+                <span class="ds-dot"></span> Session Active
+            </span>
+            <h1 class="ds-headline">
+                Welcome back,<br>
+                <span class="ds-name">{{ user }}</span>
+            </h1>
+            <p class="ds-sub">
+                DeepScan uses advanced computer vision to detect AI-generated media.<br>
+                Upload a file to get started.
+            </p>
+            <div class="ds-actions">
+                <a href="{{ url_for('detect') }}" class="btn btn-primary ds-cta">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    Run Detection
+                </a>
+                <a href="{{ url_for('results') }}" class="btn btn-outline ds-cta-sec">View Results</a>
+            </div>
+        </div>
+
+        <!-- Animated eye / radar graphic -->
+        <div class="ds-radar-wrap" aria-hidden="true">
+            <div class="ds-radar">
+                <div class="ds-radar-ring r1"></div>
+                <div class="ds-radar-ring r2"></div>
+                <div class="ds-radar-ring r3"></div>
+                <div class="ds-radar-sweep"></div>
+                <div class="ds-radar-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                        stroke="#00e6a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Stats Row ─────────────────────────────────────────────────────── -->
+<section class="section" style="padding-top:0;">
+    <div class="container ds-stats-grid">
+
+        <div class="ds-stat-card">
+            <div class="ds-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+            </div>
+            <div>
+                <p class="ds-stat-label">Files Scanned</p>
+                <p class="ds-stat-value">—</p>
+            </div>
+        </div>
+
+        <div class="ds-stat-card">
+            <div class="ds-stat-icon ds-stat-icon--warn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+            </div>
+            <div>
+                <p class="ds-stat-label">Deepfakes Detected</p>
+                <p class="ds-stat-value">—</p>
+            </div>
+        </div>
+
+        <div class="ds-stat-card">
+            <div class="ds-stat-icon ds-stat-icon--ok">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+            </div>
+            <div>
+                <p class="ds-stat-label">Clean Files</p>
+                <p class="ds-stat-value">—</p>
+            </div>
+        </div>
+
+        <div class="ds-stat-card">
+            <div class="ds-stat-icon ds-stat-icon--blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M3 9h18M9 21V9" />
+                </svg>
+            </div>
+            <div>
+                <p class="ds-stat-label">Model Accuracy</p>
+                <p class="ds-stat-value">97.4%</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ── How It Works ──────────────────────────────────────────────────── -->
+<section class="section" style="padding-top:0;">
+    <div class="container">
+        <h2 class="ds-section-title">How It Works</h2>
+        <div class="ds-steps">
+
+            <div class="ds-step">
+                <div class="ds-step-num">01</div>
+                <div class="ds-step-body">
+                    <h3>Upload Media</h3>
+                    <p>Drag and drop or browse to upload any image, video, or audio file.</p>
+                </div>
+            </div>
+
+            <div class="ds-step-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="#00e6a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                </svg>
+            </div>
+
+            <div class="ds-step">
+                <div class="ds-step-num">02</div>
+                <div class="ds-step-body">
+                    <h3>AI Analysis</h3>
+                    <p>Our computer-vision model scans for manipulation artefacts frame by frame.</p>
+                </div>
+            </div>
+
+            <div class="ds-step-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="#00e6a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                </svg>
+            </div>
+
+            <div class="ds-step">
+                <div class="ds-step-num">03</div>
+                <div class="ds-step-body">
+                    <h3>View Report</h3>
+                    <p>Get a confidence score, highlighted regions, and a downloadable report.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ── Quick Links ───────────────────────────────────────────────────── -->
+<section class="section" style="padding-top:0; padding-bottom: 60px;">
+    <div class="container ds-quick-grid">
+
+        <a href="{{ url_for('detect') }}" class="ds-quick-card">
+            <div class="ds-quick-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+            </div>
+            <h3>Detect</h3>
+            <p>Upload and analyse a new file for deepfake content.</p>
+            <span class="ds-quick-arrow">→</span>
+        </a>
+
+        <a href="{{ url_for('results') }}" class="ds-quick-card">
+            <div class="ds-quick-icon ds-quick-icon--b">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10" />
+                    <line x1="12" y1="20" x2="12" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+            </div>
+            <h3>Results</h3>
+            <p>Browse past scan reports and confidence scores.</p>
+            <span class="ds-quick-arrow">→</span>
+        </a>
+
+        <a href="{{ url_for('profile') }}" class="ds-quick-card">
+            <div class="ds-quick-icon ds-quick-icon--c">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </div>
+            <h3>Profile</h3>
+            <p>Edit your display name, bio, and account details.</p>
+            <span class="ds-quick-arrow">→</span>
+        </a>
+
+    </div>
+</section>
+
+<!-- ── Scoped Styles ─────────────────────────────────────────────────── -->
+<style>
+    /* Hero */
+    .ds-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 72px 0 56px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Animated grid */
+    .ds-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(0, 230, 160, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 230, 160, 0.04) 1px, transparent 1px);
+        background-size: 48px 48px;
+        animation: gridDrift 20s linear infinite;
+    }
+
+    @keyframes gridDrift {
+        from {
+            background-position: 0 0;
+        }
+
+        to {
+            background-position: 48px 48px;
+        }
+    }
+
+    /* Glowing orb */
+    .ds-orb {
+        position: absolute;
+        width: 480px;
+        height: 480px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 230, 160, 0.12) 0%, transparent 70%);
+        top: -140px;
+        right: -80px;
+        pointer-events: none;
+        animation: orbPulse 6s ease-in-out infinite;
+    }
+
+    @keyframes orbPulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.7;
+        }
+    }
+
+    .ds-hero-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    /* Greeting */
+    .ds-greeting {
+        flex: 1;
+        min-width: 280px;
+    }
+
+    .ds-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 230, 160, 0.3);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: #00e6a0;
+        margin-bottom: 20px;
+        animation: fadeUp 0.6s ease both;
+    }
+
+    .ds-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #00e6a0;
+        box-shadow: 0 0 6px #00e6a0;
+        animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.3;
+        }
+    }
+
+    .ds-headline {
+        font-size: clamp(2rem, 4vw, 2.9rem);
+        font-weight: 700;
+        line-height: 1.15;
+        color: var(--text-primary, #e8edf5);
+        margin: 0 0 14px;
+        animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .ds-name {
+        color: #00e6a0;
+        position: relative;
+    }
+
+    .ds-name::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #00e6a0, transparent);
+        border-radius: 2px;
+    }
+
+    .ds-sub {
+        color: var(--text-secondary, #8892a4);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin: 0 0 28px;
+        animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .ds-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .ds-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .ds-cta-sec {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Radar graphic */
+    .ds-radar-wrap {
+        flex-shrink: 0;
+        animation: fadeUp 0.7s 0.35s ease both;
+    }
+
+    .ds-radar {
+        position: relative;
+        width: 200px;
+        height: 200px;
+    }
+
+    .ds-radar-ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 230, 160, 0.25);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .r1 {
+        width: 200px;
+        height: 200px;
+    }
+
+    .r2 {
+        width: 140px;
+        height: 140px;
+        border-color: rgba(0, 230, 160, 0.35);
+    }
+
+    .r3 {
+        width: 80px;
+        height: 80px;
+        border-color: rgba(0, 230, 160, 0.5);
+    }
+
+    .ds-radar-sweep {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, transparent 70%, rgba(0, 230, 160, 0.35) 100%);
+        animation: sweep 3s linear infinite;
+    }
+
+    @keyframes sweep {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .ds-radar-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: rgba(0, 230, 160, 0.08);
+        border: 1px solid rgba(0, 230, 160, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Stats */
+    .ds-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        padding-top: 32px;
+    }
+
+    .ds-stat-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px 22px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .ds-stat-card:hover {
+        border-color: rgba(0, 230, 160, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .ds-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: rgba(0, 230, 160, 0.1);
+        color: #00e6a0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .ds-stat-icon--warn {
+        background: rgba(255, 180, 0, 0.1);
+        color: #ffb400;
+    }
+
+    .ds-stat-icon--ok {
+        background: rgba(0, 210, 120, 0.1);
+        color: #00d278;
+    }
+
+    .ds-stat-icon--blue {
+        background: rgba(80, 160, 255, 0.1);
+        color: #50a0ff;
+    }
+
+    .ds-stat-label {
+        font-size: 0.73rem;
+        color: var(--text-secondary, #8892a4);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin: 0 0 3px;
+    }
+
+    .ds-stat-value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-primary, #e8edf5);
+        margin: 0;
+    }
+
+    /* How it works */
+    .ds-section-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #00e6a0;
+        margin: 0 0 24px;
+    }
+
+    .ds-steps {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .ds-step {
+        flex: 1;
+        min-width: 180px;
+        padding: 24px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        transition: border-color 0.2s;
+    }
+
+    .ds-step:hover {
+        border-color: rgba(0, 230, 160, 0.25);
+    }
+
+    .ds-step-num {
+        font-size: 2rem;
+        font-weight: 800;
+        color: rgba(0, 230, 160, 0.2);
+        line-height: 1;
+        margin-bottom: 10px;
+    }
+
+    .ds-step-body h3 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-primary, #e8edf5);
+        margin: 0 0 6px;
+    }
+
+    .ds-step-body p {
+        font-size: 0.83rem;
+        color: var(--text-secondary, #8892a4);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .ds-step-arrow {
+        color: rgba(0, 230, 160, 0.4);
+        flex-shrink: 0;
+    }
+
+    /* Quick links */
+    .ds-quick-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+    }
+
+    .ds-quick-card {
+        position: relative;
+        display: block;
+        padding: 28px 24px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        text-decoration: none;
+        transition: border-color 0.2s, transform 0.2s, background 0.2s;
+        overflow: hidden;
+    }
+
+    .ds-quick-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(0, 230, 160, 0.05) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.25s;
+    }
+
+    .ds-quick-card:hover {
+        border-color: rgba(0, 230, 160, 0.35);
+        transform: translateY(-3px);
+    }
+
+    .ds-quick-card:hover::before {
+        opacity: 1;
+    }
+
+    .ds-quick-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: rgba(0, 230, 160, 0.1);
+        color: #00e6a0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+    }
+
+    .ds-quick-icon--b {
+        background: rgba(80, 160, 255, 0.1);
+        color: #50a0ff;
+    }
+
+    .ds-quick-icon--c {
+        background: rgba(200, 100, 255, 0.1);
+        color: #c864ff;
+    }
+
+    .ds-quick-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary, #e8edf5);
+        margin: 0 0 6px;
+    }
+
+    .ds-quick-card p {
+        font-size: 0.82rem;
+        color: var(--text-secondary, #8892a4);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .ds-quick-arrow {
+        position: absolute;
+        bottom: 20px;
+        right: 22px;
+        font-size: 1.1rem;
+        color: rgba(0, 230, 160, 0.4);
+        transition: transform 0.2s, color 0.2s;
+    }
+
+    .ds-quick-card:hover .ds-quick-arrow {
+        transform: translateX(4px);
+        color: #00e6a0;
+    }
+</style>
+
+{% endblock %}
