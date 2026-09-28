@@ -3,8 +3,8 @@
 BinaryFox | Academy of Technology | 
 
 ## Members
-- Jitu Ghosh
-- Anish Samel
+- Jitu Das
+- Anish Sasmal
 - Subhendu Mallick 
 - Sudipta Dolay
 - Bimal Kr. Mahato
